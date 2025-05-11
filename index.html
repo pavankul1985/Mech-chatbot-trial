@@ -2,9 +2,60 @@
 <html>
 <head>
   <title>My Hinglish Chatbot</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .chatbox { width: 100%; height: 400px; border: 1px solid #ddd; padding: 10px; overflow-y: scroll; }
+    .input-box { width: 100%; padding: 10px; margin-top: 10px; }
+  </style>
 </head>
 <body>
-  <h1>Welcome to My AI Chatbot</h1>
-  <p>This page will soon host your Hinglish-speaking AI bot using a .docx file.</p>
+  <h1>Welcome to My Hinglish AI Chatbot</h1>
+  
+  <div id="chatbox" class="chatbox">
+    <!-- Messages will appear here -->
+  </div>
+
+  <input type="text" id="userInput" class="input-box" placeholder="Type your question..." onkeydown="if(event.key === 'Enter') sendMessage()" />
+  
+  <script>
+    // Load .docx content using Mammoth.js
+    function loadDocx() {
+      fetch('myknowledge.docx')  // Assuming the docx file is in your repo
+        .then(response => response.arrayBuffer())
+        .then(data => {
+          mammoth.extractRawText({ arrayBuffer: data })
+            .then(function(result) {
+              // Store the .docx content in a global variable for later use
+              window.docxContent = result.value;
+              displayMessage("AI Bot: Hello! Ask me anything.");
+            });
+        })
+        .catch(error => console.error('Error loading .docx file:', error));
+    }
+
+    // Display user and bot messages
+    function displayMessage(message) {
+      const chatbox = document.getElementById('chatbox');
+      chatbox.innerHTML += '<div>' + message + '</div>';
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    // Send user input and show AI response
+    function sendMessage() {
+      const userInput = document.getElementById('userInput').value;
+      if (userInput.trim() !== '') {
+        displayMessage('You: ' + userInput);
+        document.getElementById('userInput').value = '';
+
+        // AI response logic: For now, we will return the docx content as a placeholder
+        let response = "AI Bot: Here's what I found in my knowledge base: " + window.docxContent.substring(0, 200) + '...';  // Show first 200 chars of .docx content
+        displayMessage(response);
+      }
+    }
+
+    // Initialize the page by loading the .docx content
+    loadDocx();
+  </script>
 </body>
 </html>
