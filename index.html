@@ -1,52 +1,56 @@
-<script>
-  // Load .docx content using Mammoth.js
-  function loadDocx() {
-    fetch('myknowledge.docx.txt')  // Make sure the .docx file is in the root of your repo
-      .then(response => response.arrayBuffer())
-      .then(data => {
-        console.log("Fetched .docx file successfully."); // Log fetch success
-        mammoth.extractRawText({ arrayBuffer: data })
-          .then(function(result) {
-            console.log("Extracted text from .docx file:", result.value); // Log extracted text
-            // Store the .docx content in a global variable for later use
-            window.docxContent = result.value;
-            displayMessage("AI Bot: Hello! Ask me anything.");
-          })
-          .catch(error => console.error('Error extracting text from .docx:', error)); // Log extraction errors
-      })
-      .catch(error => console.error('Error loading .docx file:', error)); // Log fetch errors
-  }
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Hinglish AI Chatbot</title>
+  <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+</head>
+<body>
+  <!-- Your chatbot interface here -->
 
-  // Display user and bot messages
-  function displayMessage(message) {
-    const chatbox = document.getElementById('chatbox');
-    chatbox.innerHTML += '<div>' + message + '</div>';
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
+  <div id="chatbox" style="height: 300px; overflow-y: auto; border: 1px solid #ccc;"></div>
+  <input type="text" id="userInput" placeholder="Type your question" />
+  <button onclick="sendMessage()">Send</button>
 
-  // Send user input and show AI response
-  function sendMessage() {
-    const userInput = document.getElementById('userInput').value;
-    if (userInput.trim() !== '') {
-      displayMessage('You: ' + userInput);
-      document.getElementById('userInput').value = '';
-
-      // AI response logic based on user input
-      let response = "AI Bot: Here's what I found in my knowledge base.";
-
-      // Check for certain keywords and show relevant content from the .docx file
-      if (userInput.toLowerCase().includes("help")) {
-        response = "AI Bot: I can assist you with information from my knowledge base.";
-      } else if (userInput.toLowerCase().includes("info")) {
-        response = "AI Bot: Here's some information: " + window.docxContent.substring(0, 200) + '...';  // Show first 200 chars
-      } else {
-        response = "AI Bot: I couldn't find specific info. Here's some general knowledge: " + window.docxContent.substring(0, 200) + '...';
-      }
-
-      displayMessage(response);
+  <script>
+    // Your chatbot JavaScript goes here
+    function loadDocx() {
+      fetch('myknowledge.docx.txt')
+        .then(response => response.arrayBuffer())
+        .then(data => {
+          console.log("Fetched .docx file successfully.");
+          mammoth.extractRawText({ arrayBuffer: data })
+            .then(function(result) {
+              console.log("Extracted text from .docx file:", result.value);
+              window.docxContent = result.value;
+              displayMessage("AI Bot: Hello! Ask me anything.");
+            })
+            .catch(error => console.error('Error extracting text from .docx:', error));
+        })
+        .catch(error => console.error('Error loading .docx file:', error));
     }
-  }
 
-  // Initialize the page by loading the .docx content
-  loadDocx();
-</script>
+    function displayMessage(message) {
+      const chatbox = document.getElementById('chatbox');
+      chatbox.innerHTML += '<div>' + message + '</div>';
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function sendMessage() {
+      const userInput = document.getElementById('userInput').value;
+      if (userInput.trim() !== '') {
+        displayMessage('You: ' + userInput);
+        document.getElementById('userInput').value = '';
+
+        let response = "AI Bot: Here's something from my notes.";
+        if (window.docxContent) {
+          response += " " + window.docxContent.substring(0, 200) + "...";
+        }
+        displayMessage(response);
+      }
+    }
+
+    loadDocx();
+  </script>
+</body>
+</html>
