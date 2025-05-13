@@ -1,7 +1,7 @@
 <script>
   // Load .docx content using Mammoth.js
   function loadDocx() {
-    fetch('myknowledge.docx')  // Make sure the .docx file is in the root of your repo
+    fetch('myknowledge.docx.txt')  // Make sure the .docx file is in the root of your repo
       .then(response => response.arrayBuffer())
       .then(data => {
         console.log("Fetched .docx file successfully."); // Log fetch success
